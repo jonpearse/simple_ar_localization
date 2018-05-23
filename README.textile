@@ -1,0 +1,85 @@
+h1. Simple AR Localizer
+
+SimpleARLocalizer is a gem that—hopefully—provides a slightly easier way of writing localisations for ActiveRecord models when splitting things out into per-model files.
+Out of the box, it provides hooks for a model’s human name, human attribute names, and both per-model and per-attribute error messaging.
+
+This means that instead of having:
+
+<pre># config/locales/foo/en.yml
+en:
+  activerecord:
+    models:
+      foo: model name
+
+    attributes:
+      foo:
+        attr_one: attribute name
+
+    errors:
+      models:
+        foo:
+          attributes:
+            attr_one:
+              blank: You need to fill this in
+</pre>
+
+You can instead use:
+
+<pre><code># config/locales/foo/en.rb
+SimpleARLocalizer::transform( Foo, :en, {
+  name: 'model name',
+  attributes: {
+    attr_one: {
+      name: 'attribute name',
+      errors: {
+        blank: 'You need to fill this in'
+      }
+    }
+  }
+})</code></pre>
+
+It’s still not exactly _pretty_, but it’s a little more descriptive and you’re less likely to put things in the wrong place/get your indents wrong.
+
+h2. Installation and using
+
+Add the following to your @Gemfile@ and run `bundle install`.
+
+<pre>gem 'simple_ar_localizer', '~> 1.0'</pre>
+
+Then, add the following in your @config/application.rb@:
+
+<pre># Also allow nested locale files
+config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]</pre>
+
+You should now be able to start using SimpleARLocalizer to generate your localisations, however it is important to note that this can only be used in Ruby files, rather than the YAML files to which you may be used.
+
+h3. Usage
+
+The main entry point is @SimpleARLocalizer::transform( model, language, l10n_data )@, which takes three arguments:
+
+- model _(String or Constant)_ := the model you’re localising, either as a string (eg: @'Foo'@) or as a constant
+- language _(Symbol)_ := ISO-639 language code of the language you’re providing a localisation for (eg: @:hu@)
+- l10n_data _(Hash)_ := the localisation data itself.
+
+The format of the localisation data is described "in its own file":blob/master/doc/localisation_data.textile
+
+h3. Custom data formatting
+
+By design, this gem should cover ~90% of your localisation needs, but it also supports "custom data":blob/master/doc/custom_data.textile if you need a little extra control.
+
+h2. A quick note about dialect/spelling
+
+Keen observers will note that I use US English (-ize) in the code, and British English (-ise) throughout comments and documentation: this is intentional.
+
+For better or worse, the world seems to have settled on US English as the de-facto standard for writing software and I have honoured (honored?) that in this gem. That said, however, it feels ‘wrong’ for me to use it when writing continuous prose, thus reverting to British English elsewhere. Sorry!
+
+h2. Version History
+
+*1.0.0 _(May 23rd, 2018)_*
+
+Extraction from the project whence it came and turning into a standalone gem.
+
+h2. @#include 'sales_pitch.h'@
+
+When I’m not hacking at random gems, I’m a freelance web developer specialising in all things front-end, based in the beautiful city of Cardiff, UK.
+I’m usually kept fairly busy with project work, but I’m always on the lookout for new people to do cool stuff with. "Drop me a line":mailto:hello@jonpearse.net – I’d love to hear from you!

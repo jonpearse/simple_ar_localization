@@ -1,0 +1,80 @@
+h1. Custom localisation mapping
+
+Whilst the "defaults":./localisation_data.textile for SimpleARLocalizer are probably enough to cover the majority of things you’ll want to do with it, it also provides the ability to provide custom mappings from the localisation data hash to Rails I18n framework should you wish to extend its abilities.
+This includes overriding default rules, should they be a little limited.
+
+_(side note: this is how this gem came about—I needed a way of simply and easily localising a CMS which made heavy use of Rails’ inbuilt ‘human’ naming functionality, as well as labelling and messaging that could be localised on a per-model basis)_
+
+h2. Configuring custom rules
+
+In a Rails app, custom rules are added through the Rails configuration system:
+
+<pre><code>Rails.application.config.ar_localization_rules = {
+  …
+}</code></pre>
+
+This consists of a hash, where the keys are the pseudo-path within the localisation data hash (more on that in a moment), and the value is the Rails I18n key to which it should be mapped.
+
+Thus, the default @:name@ rule would be specified as:
+
+<pre><code>Rails.application.config.ar_localization_rules = {
+  'name': 'activerecord.models.%{model}'
+}</code></pre>
+
+h2. Specifying keys
+
+The mapping key is the nested keys from the incoming localisation data, separated by the forward slash (à lá XPath), thus given the localisation data:
+
+<pre>{
+  foo: {
+    bar: {
+      baz: 'value'
+    }
+  }
+}</pre>
+
+The key would be: @foo/bar/baz@
+
+h3. Interpolations
+
+The mapping parser understands interpolations, which work in a similar way to parameters in routes, for example the default rule for attribute names is specified as:
+
+<pre><code>  …
+  'attributes/:attr': 'activerecord.attributes.%{model}.%{attr}'
+  …</code></pre>
+
+The values of the interpolations (and indeed, the name of the model) can be used in the mapping, as shown above.
+
+h3. More complex mapping
+
+Sometimes you might want to do something more complex than simply taking a string from the localisation data and dropping it into a particular I18n key.
+SimpleARLocalizer allows multiple behaviours beyond a simple input–output mapping:
+
+A mapping value can be specified as an @Array@, which allows the mapping of a single item of localisation data to multiple I18n keys.
+
+<pre><code>  …
+  'foo/bar': [
+    'foo.bar.baz',
+    'qux.quux.quuz'
+  ]
+  …</code></pre>
+
+A mapping value can also be specified as a @Hash@, with members @key@ and @proc@:
+
+<pre><code>  …
+  'foo/bar': { key: 'foo.bar.baz', proc: ->(v){ v.uppercase }}
+  …</code></pre>
+
+This takes whatever is specified by @l10n_data[:foo][:bar]@, converts it to uppercase, and stores it in the I18n key @foo.bar.baz@.
+
+These can also be combined, for example, as a workaround for @Model.model_name.human@ not pluralising anything unless you explicitly tell it how to do so (which is irritating).
+
+<pre><code>  …
+  'name': [
+    'activerecord.models.%{model}.one',
+    { key: 'activerecord.models.%{model}.other', proc: ->(s){ s.pluralize }}
+  ]
+  …
+</code></pre>
+
+Will take the inbound name and stores it in the I18n key @activerecord.models.%{model}.one@, but also stores its plural form in @activerecord.models.%{model}.other@, and saves you having to do this manually.
