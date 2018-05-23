@@ -61,11 +61,11 @@ The main entry point is @SimpleARLocalizer::transform( model, language, l10n_dat
 - language _(Symbol)_ := ISO-639 language code of the language you’re providing a localisation for (eg: @:hu@)
 - l10n_data _(Hash)_ := the localisation data itself.
 
-The format of the localisation data is described "in its own file":blob/master/doc/localisation_data.textile
+The format of the localisation data is described "in its own file":doc/localisation_data.textile
 
 h3. Custom data formatting
 
-By design, this gem should cover ~90% of your localisation needs, but it also supports "custom data":blob/master/doc/custom_data.textile if you need a little extra control.
+By design, this gem should cover ~90% of your localisation needs, but it also supports "custom data":doc/custom_data.textile if you need a little extra control.
 
 h2. A quick note about dialect/spelling
 
