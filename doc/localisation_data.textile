@@ -1,0 +1,103 @@
+h1. Localisation data
+
+Localisation data is passed to SimpleARLocalizer as a nested hash, thus:
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  name: 'model name',
+  attributes: {
+    attr_one: {
+      name: 'attribute name',
+      errors: {
+        blank: 'You need to fill this in'
+      }
+    }
+  }
+})</code></pre>
+
+This file quickly documents how this works, and the options that are configured by default.
+
+Note that, by default, none of the hash members are required. Additionally, unconfigured members are simply ignored.
+
+h2. Model name: @name@
+
+_Mapped to @activerecord.models.%{model}@_
+
+This is used to specify the ‘human’ name for the model being localised (accessed via @Model.model_name.human@ ), and can be specified either as a string or a hash.
+Using a hash ties into "Rails’ default behaviour":http://guides.rubyonrails.org/i18n.html#translations-for-active-record-models with regard pluralisation, thus:
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  name: {
+    one: 'foo',
+    two: 'foos'
+  }
+})
+
+Foo.model_name.human( count: 1 ) # ‘foo’
+Foo.model_name.human( count: 2 ) # 'foos'
+</code></pre>
+
+SimpleARLocalizer also provides two aliases at this level: @:singular@ and @:plural@ which are mapped to @:one@ and @:other@ respectively. This is simply to make things a little clearer when defining localisations, especially who might not be quite as familiar with Rails’ I18n framework.
+
+As such, the two statements below are equal.
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  name: {
+    one: 'foo',
+    other: 'foos'
+  }
+})
+
+SimpleARLocalizer::transform( Foo, :en, {
+  name: {
+    singular: 'foo',
+    plural:   'foos'
+  }
+})</code></pre>
+
+h3. Side note on pluralisation
+
+If you intend to use @Model.model_name.human( count: x )@ in your code, Rails requires that you specify at least @:one@ and @:other@ for it to work properly. That is, if you just specify a single value, it’ll not pluralise it for you.
+There is a simple workaround for this in the "custom data"./custom_data.textile documentation.
+
+h2. Generic error messages: @errors@
+
+_Mapped to @activerecord.errors.models.%{model}@_
+
+This takes a @hash@, and is used to specify "validation error messages":http://guides.rubyonrails.org/active_record_validations.html on a per-model basis. A list of possible keys is available in "the appropriate Rails guide":http://guides.rubyonrails.org/i18n.html#error-message-interpolation
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  errors: {
+    blank: 'This is required',
+    invalid: 'That doesn’t look right to me…',
+    less_than: 'Must be less than %{count}'
+  }
+})
+</code></pre>
+
+h2. Model attributes: @attributes@
+
+*_Mapped to @activerecord.attributes.%{model}@ … kinda_*
+
+This is a hash, where each member relates to a particular attribute of your model. In its simplest form, each value is a simple string:
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  attributes: {
+    title: 'Title',
+    body:  'Body'
+  }
+})</code></pre>
+
+This provides localisation for the ‘human’ attribute name, accessed via @Model.human_attribute_name( attr )@
+
+However, SimpleARLocalizer also supports per-attribute error messages, in which case the value of each hash member should itself be a Hash.
+
+<pre><code>SimpleARLocalizer::transform( Foo, :en, {
+  attributes: {
+    title: {
+      name: 'Title',
+      errors: {
+        blank: 'You really need a title…'
+      }
+    }
+  }
+})</code></pre>
