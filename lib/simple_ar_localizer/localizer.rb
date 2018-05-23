@@ -12,21 +12,6 @@ module SimpleARLocalizer
   class Localizer
     include Singleton
 
-    # Default map of inbound keys to outbound
-    DEFAULT_MAP = {
-      # per-model stuff
-      'name':          'activerecord.models.%{model}',
-      'name/singular': 'activerecord.models.%{model}.one',
-      'name/plural':   'activerecord.models.%{model}.other',
-      'name/:key':     'activerecord.models.%{model}.%{key}',
-      'errors/:error': 'activerecord.errors.models.%{model}.%{error}',
-
-      # per-attribute stuff
-      'attributes/:attr':      'activerecord.attributes.%{model}.%{attr}', # only specifying a name
-      'attributes/:attr/name': 'activerecord.attributes.%{model}.%{attr}', # verbose specification
-      'attributes/:attr/errors/:error': 'activerecord.errors.models.%{model}.attributes.%{attr}.%{error}'
-    }
-
     # Constructor logic. This should not be called directly.
     def initialize
 
@@ -72,7 +57,7 @@ module SimpleARLocalizer
         language = language.to_sym unless language.is_a?( Symbol )
 
         # compile our rules into a tree for easier matching
-        @rules = DEFAULT_MAP.merge( @custom_rules ).deep_stringify_keys
+        @rules = SimpleARLocalizer::DEFAULT_MAP.merge( @custom_rules ).deep_stringify_keys
 
         # parse everything
         parsed = deep_parse( l10n_data.deep_stringify_keys, { model: model_name })
