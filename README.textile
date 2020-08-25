@@ -75,6 +75,10 @@ For better or worse, the world seems to have settled on US English as the de-fac
 
 h2. Version History
 
+*1.0.1 _(August 25th, 2020)_*
+
+Minor bump to support ActiveRecord 6.x.
+
 *1.0.0 _(May 23rd, 2018)_*
 
 Extraction from the project whence it came and turning into a standalone gem.

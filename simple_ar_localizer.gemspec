@@ -16,6 +16,6 @@ Gem::Specification.new do |gem|
   gem.license       = 'MIT'
   gem.homepage      = 'https://github.com/jonpearse/simple_ar_localizer'
 
-  gem.add_dependency( 'activerecord', '~> 5.1' )
+  gem.add_dependency( 'activerecord', '>= 5.1' )
 
 end
